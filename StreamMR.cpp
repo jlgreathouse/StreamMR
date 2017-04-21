@@ -222,11 +222,11 @@ int MapReduce::setupCL()
 
     if (jobSpec->workflow == MAP_ONLY)
     {
-        kernelPath.append(kernelfilename.c_str());	
+        kernelPath.append(kernelfilename.c_str());
     }
     else  //MAP_REDUCE
     {
-        kernelPath.append(kernelfilename.c_str());	
+        kernelPath.append(kernelfilename.c_str());
     }
 
     kernelFile = fopen(kernelPath.c_str(), "r");
@@ -500,7 +500,7 @@ int MapReduce::setupCL()
      * fall back */
     printf("Successfully query the workgroup size of each kernel\n");
     size_t temp;
-    if (kernelWorkGroupSize > mapperWorkGroupSize) 
+    if (kernelWorkGroupSize > mapperWorkGroupSize)
         temp = mapperWorkGroupSize;
     else
         temp = kernelWorkGroupSize;
@@ -509,7 +509,7 @@ int MapReduce::setupCL()
 
     if (temp >  mapperExtendedWorkGroupSize) temp = mapperExtendedWorkGroupSize;
 
-    if (temp >  reducerInOverflowWorkGroupSize) temp = reducerInOverflowWorkGroupSize; 
+    if (temp >  reducerInOverflowWorkGroupSize) temp = reducerInOverflowWorkGroupSize;
 
     if (temp >  copyerWorkGroupSize) temp = copyerWorkGroupSize;
 
@@ -666,7 +666,7 @@ MapReduce::~MapReduce()
 }
 
 //--------------------------------------------------------------------------------------
-//Start Map phase for applications with Map and Reduce phase like KMeans and Wordcount 
+//Start Map phase for applications with Map and Reduce phase like KMeans and Wordcount
 //--------------------------------------------------------------------------------------
 int MapReduce::startMapType2()
 {
@@ -758,7 +758,7 @@ int MapReduce::startMapType2()
     d_gOutputKeySize = NULL;
     d_gOutputValSize = NULL;
     d_gHashBucketSize = NULL;
-    cl_int  *h_interAllKeys,*h_interAllVals, * h_outputAllVals, * h_outputAllKeys, 
+    cl_int  *h_interAllKeys,*h_interAllVals, * h_outputAllVals, * h_outputAllKeys,
             * h_hashTableAllVals ,  * h_hashBucketAllVals;
 
     h_estimatedInterValSize = (jobSpec->overflow)? jobSpec->estimatedInterRecords * jobSpec->estimatedInterValSize * 30: jobSpec->estimatedInterRecords * jobSpec->estimatedInterValSize ;
@@ -843,7 +843,7 @@ int MapReduce::startMapType2()
                 "clCreateBuffer failed. (d_hashTable)"))
         return SDK_FAILURE;
 
-    //Create another data structure to hold the linked list of each hash bucket 
+    //Create another data structure to hold the linked list of each hash bucket
     totalHashBucketSize = (jobSpec->overflow)? hashEntriesNum* numWavefrontsPerGroup * numGroups  * 20 :hashEntriesNum* numGroups ; //assuming 20 collisions per hash entry
 
     d_hashBucket = clCreateBuffer(context,
@@ -902,9 +902,9 @@ int MapReduce::startMapType2()
     overflowWGId = (cl_uint *) malloc(sizeof(cl_uint) * numGroups);
 
     cl_mem d_metaEmitted =  clCreateBuffer(context,
-            CL_MEM_READ_WRITE, 
+            CL_MEM_READ_WRITE,
             h_inputRecordCount*sizeof(cl_int),
-            NULL, 
+            NULL,
             &status);
     if(!checkVal(status,
                 CL_SUCCESS,
@@ -914,7 +914,7 @@ int MapReduce::startMapType2()
     cl_mem d_metaOverflow=  clCreateBuffer(context,
             CL_MEM_READ_WRITE,
             h_inputRecordCount*sizeof(cl_int),
-            NULL, 
+            NULL,
             &status);
     if(!checkVal(status,
                 CL_SUCCESS,
@@ -924,7 +924,7 @@ int MapReduce::startMapType2()
     cl_mem d_metaEmitted2=  clCreateBuffer(context,				//From second Map kernel
             CL_MEM_READ_WRITE,
             h_inputRecordCount*sizeof(cl_int),
-            NULL, 
+            NULL,
             &status);
     if(!checkVal(status,
                 CL_SUCCESS,
@@ -1181,7 +1181,7 @@ int MapReduce::startMapType2()
     status = clSetKernelArg(
             mapperKernel,
             22,
-            sizeof(cl_uint) * numWavefrontsPerGroup,   
+            sizeof(cl_uint) * numWavefrontsPerGroup,
             NULL);
     if(!checkVal(status,
                 CL_SUCCESS,
@@ -1271,7 +1271,7 @@ int MapReduce::startMapType2()
                 "clSetKernelArg failed. (d_gHashBucketSize)"))
         return SDK_FAILURE;
 
-    uint localKeysBufferPerWavefront= localKeysSize/numWavefrontsPerGroup; 
+    uint localKeysBufferPerWavefront= localKeysSize/numWavefrontsPerGroup;
     status = clSetKernelArg(
             mapperKernel,
             31,
@@ -1364,7 +1364,7 @@ int MapReduce::startMapType2()
                 "clSetKernelArg failed. (local memory37)"))
         return SDK_FAILURE;
 
-    for (int i=0; i< numGroups; i++) 
+    for (int i=0; i< numGroups; i++)
         overflowWGId[i]=i;
 
     cl_mem  d_overflowWGId = clCreateBuffer(context,
@@ -1389,7 +1389,7 @@ int MapReduce::startMapType2()
         return SDK_FAILURE;
 
     cl_uint h_extended = 0;
-    if (jobSpec->perfectHashing) h_extended = 2; 
+    if (jobSpec->perfectHashing) h_extended = 2;
     printf("perfect Hashing %i \n", h_extended);
     status = clSetKernelArg(
             mapperKernel,
@@ -1470,7 +1470,7 @@ int MapReduce::startMapType2()
                 status,
                 CL_SUCCESS,
                 "clSetKernelArg failed. (35: Num of hashBuckets)"))
-        return SDK_FAILURE;  
+        return SDK_FAILURE;
 
     status = clSetKernelArg(
             mapperKernel,
@@ -1540,8 +1540,8 @@ int MapReduce::startMapType2()
                {
                printf ("emitted[%i]= %i\n",i, h_metae[i]);
                cg+=h_metae[i];
-               c+=  h_metae[i];	
-               if ( (i+1)%64 == 0) 
+               c+=  h_metae[i];
+               if ( (i+1)%64 == 0)
                {
                printf("Group counts[%i]= %i\n",i, cg);
                cg = 0 ;
@@ -2399,7 +2399,7 @@ int MapReduce::startMapType2()
 
                free(h_metae);
 
-*/	 
+*/
             //printFinalOutput( 1, KeysDiff, ValsDiff, sizeof(cl_uint4) *totalHashSizeExtra, sizeof(cl_uint4) *CountsDiff, h_interAllOffsetSizes );
 
         }//End Extended Mapper
@@ -2509,7 +2509,7 @@ int MapReduce::startReduce()
             {
                 //each thread handles all hash tables
                 h_actualNumThreads = CEIL( jobSpec->estimatedRecords, h_recordsPerTask);
-                h_hashesPerThread = 1; 
+                h_hashesPerThread = 1;
             }
             else
             {
@@ -2739,7 +2739,7 @@ int MapReduce::startReduce()
                 ker,
                 15,
                 sizeof(cl_uint),
-                NULL);                                        
+                NULL);
         if(!checkVal(
                     status,
                     CL_SUCCESS,
@@ -3170,9 +3170,12 @@ int MapReduce::startReduce()
         contiguousKeysSize += (contiguousKeysSize % 64);
     if(contiguousValsSize % 64 != 0)
         contiguousValsSize += (contiguousValsSize % 64);
-    if(contiguousOffsets % 64 != 0)
-        contiguousOffsets += (contiguousOffsets % 64);
-    printf("EXPANDED h_allKeySize %i , h_allValSize  %i, h_allCounts %i\n",contiguousKeysSize, contiguousValsSize, contiguousOffsets);
+
+    cl_uint bufferContiguousOffsets = contiguousOffsets;
+    if(bufferContiguousOffsets % 64 != 0)
+        bufferContiguousOffsets += (bufferContiguousOffsets % 64);
+
+    printf("EXPANDED h_allKeySize %i , h_allValSize  %i, h_allCounts %i\n",contiguousKeysSize, contiguousValsSize, bufferContiguousOffsets);
 
     timerStart();
     //Create buffers storing final outputs
@@ -3198,7 +3201,7 @@ int MapReduce::startReduce()
 
     d_outputKeyValOffsets = clCreateBuffer(context,
             CL_MEM_READ_WRITE,
-            sizeof(cl_uint4) * contiguousOffsets,
+            sizeof(cl_uint4) * bufferContiguousOffsets,
             NULL,
             &status);
     if(!checkVal(status,
@@ -3596,7 +3599,7 @@ int MapReduce::startMapReduce()
             if (ret != 0)
             {
                 printf("Error in Map phase");
-                return -1;	
+                return -1;
             }
             ret=startReduce();
 
@@ -3612,7 +3615,7 @@ int MapReduce::startMapReduce()
             printf("Un-supported application!!");
             return -1;
         }
-    }	
+    }
     return 0;
 }
 
@@ -3630,7 +3633,7 @@ int MapReduce::printFinalOutput(uint stage, uint keysSizes, uint valsSizes, uint
     cl_int4* hbuckets= NULL;
     cl_int* hIsBaseForReduce= NULL;
 
-    //Print final contiguous output 
+    //Print final contiguous output
     if (stage  == 5)
     {
         timerStart();
@@ -3666,12 +3669,16 @@ int MapReduce::printFinalOutput(uint stage, uint keysSizes, uint valsSizes, uint
                     "clReadBuffer failed. (d_contiguousOutputVals)"))
             return SDK_FAILURE;
 
-        jobSpec->outputOffsetSizes = (cl_uint4*)malloc(contiguousOffsets * sizeof (cl_uint4));
+        cl_uint bufferContiguousOffsets = contiguousOffsets;
+        if(bufferContiguousOffsets % 64 != 0)
+            bufferContiguousOffsets += (bufferContiguousOffsets % 64);
+
+        jobSpec->outputOffsetSizes = (cl_uint4*)malloc(bufferContiguousOffsets * sizeof (cl_uint4));
         status = clEnqueueReadBuffer(commandQueue,
                 d_outputKeyValOffsets,
                 1,
                 0,
-                contiguousOffsets * sizeof (cl_uint4),
+                bufferContiguousOffsets * sizeof (cl_uint4),
                 jobSpec->outputOffsetSizes,
                 0,
                 0,
@@ -3958,7 +3965,7 @@ int MapReduce::printFinalOutput(uint stage, uint keysSizes, uint valsSizes, uint
         {
             cl_int4 hashentry = htables[i*jobSpec->estimatedRecords + j];
 
-            if ( hashentry.z <= 0) 
+            if ( hashentry.z <= 0)
             {
                 continue;
             }
@@ -3977,7 +3984,7 @@ int MapReduce::printFinalOutput(uint stage, uint keysSizes, uint valsSizes, uint
             cl_int4 hashbucket = hbuckets [ hashentry.x];
             //printf("(%i- %i -%i- %i)   ",hashbucket.x, hashbucket.y, hashbucket.z, hashbucket.w);
 
-            if (hashbucket.y < 0 ) 
+            if (hashbucket.y < 0 )
             {
                 //printf("y is negative\n");
                 continue;
@@ -4000,14 +4007,14 @@ int MapReduce::printFinalOutput(uint stage, uint keysSizes, uint valsSizes, uint
                 {
                     hashbucket = hbuckets [  next];
                     //printf("(%i- %i -%i- %i)   ",hashbucket.x, hashbucket.y, hashbucket.z, hashbucket.w);
-                    if (hashbucket.y < 0 ) 
+                    if (hashbucket.y < 0 )
                     {
                         //printf("y is negative\n");
                         break;
                     }
                     //for (int z=0; z <  hashbucket.y; z++)
                     //	printf("%c",jobSpec->outputKeys[hashbucket.x + z]);
-                    //printf("%i",ok[hashbucket.x/4]);			
+                    //printf("%i",ok[hashbucket.x/4]);
 
                     //printf("  (%i,%i,%i ) ||",o[hashbucket.z/4],o[hashbucket.z/4+1],o[hashbucket.z/4+2]);
                     //printf("  %i||",o[hashbucket.z/4]);
@@ -4016,7 +4023,7 @@ int MapReduce::printFinalOutput(uint stage, uint keysSizes, uint valsSizes, uint
                 }
             }
 
-            //if ( hashbucket.w != -1) 
+            //if ( hashbucket.w != -1)
             //printf("\n********************Error ( -1) ***********************\n");
 
             //printf("\n");
@@ -4048,7 +4055,7 @@ void MapReduce::AddMapInputRecord(
     int index = jobSpec->inputRecordCount;
     //printf("key:%s value:%s\n",key,val);
     //printf("inputRecordCount:%f\n",jobSpec->inputRecordCount);
-    const int dataChunkSize = 1024*1024*256; 
+    const int dataChunkSize = 1024*1024*256;
 
     if (jobSpec->inputRecordCount > 0)
     {
@@ -4109,7 +4116,7 @@ int MapReduce::startMapType1()
 
     cl_int status;
 
-    timerStart();	
+    timerStart();
 
     if (!jobSpec->Validate()) return -1;
 
@@ -4247,7 +4254,7 @@ int MapReduce::startMapType1()
         h_interAllVals[i]=i*h_workgroupValSizes;
         h_interAllOffsetSizes[i]=i*h_workgroupOffsetsizes;
         //printf("offsets group %i: %i - %i - %i\n",i,h_interAllKeys[i],h_interAllVals[i], h_interAllOffsetSizes[i]);
-    } 	
+    }
 
 
     cl_mem  d_interKeysOffsets = clCreateBuffer(context,
@@ -4843,8 +4850,8 @@ int MapReduce::startMapType1()
 
     //printf("offsets: %i Keys: %i Vals: %i \n", CountsDiff, KeysDiff, ValsDiff);
     printf("Output records: %i\n",allCountsUsed);
-    jobSpec->interRecordCount = allCountsUsed; 
-    jobSpec->interDiffKeyCount = CountsDiff; 
+    jobSpec->interRecordCount = allCountsUsed;
+    jobSpec->interDiffKeyCount = CountsDiff;
     jobSpec->interAllKeySize = allKeys;
     jobSpec->interAllValSize = allVals;
 
@@ -5154,7 +5161,7 @@ int MapReduce::startMapType1()
 
 
 
-int MapReduce::checkVal(cl_int& states, int check, const std::string *info) 
+int MapReduce::checkVal(cl_int& states, int check, const std::string *info)
 {
     if (states==check)
         return 1;
